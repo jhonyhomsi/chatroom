@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Room</title>
+  <script>
+    const socket = new WebSocket('ws://localhost:3000');
+
+    function joinChat() {
+      const username = document.getElementById('username').value;
+      socket.send(`${username} joined the chat`);
+      document.getElementById('join-form').style.display = 'none';
+      document.getElementById('chat-form').style.display = 'block';
+    }
+
+    function sendMessage() {
+      const username = document.getElementById('username').value;
+      const message = document.getElementById('message').value;
+      socket.send(`${username}: ${message}`);
+      document.getElementById('message').value = '';
+    }
+
+    socket.onmessage = (event) => {
+      const chatLog = document.getElementById('chat-log');
+      const newMessage = document.createElement('li');
+      newMessage.textContent = event.data;
+      chatLog.appendChild(newMessage);
+    };
+  </script>
+</head>
+<body>
+  <div id="join-form">
+    <h1>Join the Chat Room</h1>
+    <label for="username">Username:</label>
+    <input type="text" id="username" />
+    <button onclick="joinChat()">Join</button>
+  </div>
+  <div id="chat-form" style="display:none;">
+    <h1>Chat Room</h1>
+    <ul id="chat-log"></ul>
+    <label for="message">Message:</label>
+    <input type="text" id="message" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</body>
+</html>
