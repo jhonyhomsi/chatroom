@@ -47,6 +47,99 @@ server.listen(port, () => {
 
 //const http = require('http');
 //const express = require('express');
+//const cors = require('cors')
+//const WebSocket = require('ws');
+//const app = express();
+//const server = http.createServer(app);
+//const wss = new WebSocket.Server({ server });
+//
+//const port = process.env.PORT || 3000;
+//
+//
+//app.use(cors())
+//
+//
+//const messages = [];
+//
+//app.use(express.static(__dirname + '/public'));
+//
+//wss.on('connection', (socket) => {
+//  console.log(`online`);
+//
+//  socket.on('message', (message) => {
+//    console.log(`received message: ${message}`);
+//    messages.push(message);
+//    wss.clients.forEach((client) => {
+//      if (client !== socket && client.readyState === WebSocket.OPEN) {
+//        client.send(message);
+//      }
+//    });
+//  });
+//
+//  messages.forEach((message) => {
+//    socket.send(message);
+//  });
+//
+//  socket.on('close', () => {
+//    console.log('a user disconnected');
+//  });
+//});
+//
+//server.listen(port, () => {
+//  console.log(`Server listening on port ${port}`);
+//});
+
+
+
+//const http = require('http');
+//const express = require('express');
+//const WebSocket = require('ws');
+//
+//const app = express();
+//const server = http.createServer(app);
+//const wss = new WebSocket.Server({ server });
+//
+//const port = process.env.PORT || 3000;
+//
+//app.use(express.static(__dirname + '/public'));
+//
+//wss.on('connection', (socket) => {
+//  console.log('a user connected');
+//
+//  socket.on('message', (message) => {
+//    console.log(`received message: ${message}`);
+//    const data = JSON.parse(message);
+//    if (data.type === 'join') {
+//      const joinMessage = `${data.name} joined the chat`;
+//      wss.clients.forEach((client) => {
+//        if (client.readyState === WebSocket.OPEN) {
+//          client.send(JSON.stringify({ type: 'join', message: joinMessage }));
+//        }
+//      });
+//    } else if (data.type === 'message') {
+//      const messageContent = `${data.name}: ${data.message}`;
+//      wss.clients.forEach((client) => {
+//        if (client.readyState === WebSocket.OPEN) {
+//          client.send(JSON.stringify({ type: 'message', name: data.name, message: data.message }));
+//        }
+//      });
+//    }
+//  });
+//
+//  socket.on('close', () => {
+//    console.log('a user disconnected');
+//  });
+//});
+//
+//server.listen(port, () => {
+//  console.log(`Server listening on port ${port}`);
+//});
+
+
+
+
+//const http = require('http');
+//const express = require('express');
 //const WebSocket = require('ws');
 //
 //const app = express();
