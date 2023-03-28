@@ -2,30 +2,14 @@
 <html>
 <head>
   <title>Chat Room</title>
-  <script>
-    const socket = new WebSocket('ws:https://chatroom-khuv.onrender.com');
-
-    function joinChat() {
-      const username = document.getElementById('username').value;
-      socket.send(`${username} joined the chat`);
-      document.getElementById('join-form').style.display = 'none';
-      document.getElementById('chat-form').style.display = 'block';
+  <style>
+    #chat-log {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
     }
-
-    function sendMessage() {
-      const username = document.getElementById('username').value;
-      const message = document.getElementById('message').value;
-      socket.send(`${username}: ${message}`);
-      document.getElementById('message').value = '';
-    }
-
-    socket.onmessage = (event) => {
-      const chatLog = document.getElementById('chat-log');
-      const newMessage = document.createElement('li');
-      newMessage.textContent = event.data;
-      chatLog.appendChild(newMessage);
-    };
-  </script>
+  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="join-form">
@@ -41,5 +25,36 @@
     <input type="text" id="message" />
     <button onclick="sendMessage()">Send</button>
   </div>
+  <script>
+    const socket = new WebSocket('ws://localhost:3000');
+    const chatLog = document.getElementById('chat-log');
+    const username = document.getElementById('username');
+    const messageInput = document.getElementById('message');
+
+    function joinChat() {
+      const name = username.value.trim();
+      if (!name) return;
+      socket.send(JSON.stringify({ type: 'join', name }));
+      document.getElementById('join-form').style.display = 'none';
+      document.getElementById('chat-form').style.display = 'block';
+    }
+
+    function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+      socket.send(JSON.stringify({ type: 'message', name: username.value, message }));
+      messageInput.value = '';
+    }
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'message') {
+        const message = `${data.name}: ${data.message}`;
+        const newMessage = document.createElement('li');
+        newMessage.textContent = message;
+        chatLog.appendChild(newMessage);
+      }
+    };
+  </script>
 </body>
 </html>
