@@ -1,0 +1,98 @@
+/* Style for the chat container */
+#chat-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 20px;
+  }
+  
+  /* Style for the chat log */
+  #chat-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #chat-log li {
+    background-color: #f6f6f6;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  /* Style for the message input */
+  #message {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+    padding: 10px;
+    width: 100%;
+  }
+  
+  /* Style for the send button */
+  #send-button {
+    background-color: #0084ff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+  }
+  
+  #send-button:hover {
+    background-color: #0073e6;
+  }
+  
+  /* Style for the join button 
+  #join-button {
+    background-color: #0084ff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+  }*/
+  
+  #join-button:hover {
+    background-color: #0073e6;
+  }
+  
+  /* Style for the login container 
+  #login-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 20px;
+  }*/
+  /*
+  #login-container h1 {
+    margin-top: 0;
+  }
+  */
+  
+  /* Style for the number of clients */
+  #num-clients {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  /* Style for the message list */
+  #message-list {
+    height: 200px;
+    overflow: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }  

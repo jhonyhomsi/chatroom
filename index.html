@@ -1,60 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Chat Room</title>
-  <style>
-    #chat-log {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-  </style>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="test.css">
+    <title>Chat</title>
+    <style>
+        #chat-log {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            height: 300px;
+            overflow: auto;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-  <div id="join-form">
-    <h1>Join the Chat Room</h1>
-    <label for="username">Username:</label>
-    <input type="text" id="username" />
-    <button onclick="joinChat()">Join</button>
-  </div>
-  <div id="chat-form" style="display:none;">
-    <h1>Chat Room</h1>
-    <ul id="chat-log"></ul>
-    <label for="message">Message:</label>
-    <input type="text" id="message" />
-    <button onclick="sendMessage()">Send</button>
+      <div id="login-container" class="form">
+        <h1>Chat</h1>
+        <input type="text" id="username" placeholder="Enter your name" />
+        <button id="join-button" onclick="JoinChat()">Join</button>
+      </div>
+      <div id="chat-container" style="display:none;">
+        <h1>Chat</h1>
+        <ul id="chat-log"></ul>
+        <div id="num-clients"></div>
+        <input type="text" id="message" placeholder="Type your message" />
+        <button id="send-button" onclick="sendMessage()">Send</button>
+      </div>
+      <script>
+            const socket = new WebSocket('ws://localhost:3000');
+            const chatLog = document.getElementById('chat-log');
+            const username = document.getElementById('username');
+            const messageInput = document.getElementById('message');
+            
+            function JoinChat() {
+                const name = username.value.trim();
+                if (!name) return;
+                socket.send(JSON.stringify({ type: 'join', name }));
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+            }
+
+            function sendMessage() {
+              const message = messageInput.value.trim();
+              if (!message) return;
+              const name = username.value;
+              socket.send(JSON.stringify({ type: 'message', name, message }));
+              messageInput.value = '';
+            }
+
+            
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'message') {
+                    const message = `${data.name}: ${data.message}`;
+                    const newMessage = document.createElement('li');
+                    newMessage.textContent = message;
+                    chatLog.appendChild(newMessage);
+                }
+            };
+      </script>
+</body>
+</html>
+
+
+
+<!--
+whatsapp form
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <link rel="stylesheet" href="WhatStyle.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>Chat</h1>
+    </div>
+    <div class="chat-log" id="chat-log"></div>
+    <div class="chat-input">
+      <input type="text" id="message" placeholder="Type your message">
+      <button id="send-button" onclick="sendMessage()">Send</button>
+    </div>
   </div>
   <script>
-    const socket = new WebSocket('ws://chatroom-khuv.onrender.com');
-    const chatLog = document.getElementById('chat-log');
-    const username = document.getElementById('username');
-    const messageInput = document.getElementById('message');
+const socket = new WebSocket('ws://localhost:3000');
+const chatLog = document.getElementById('chat-log');
+const messageInput = document.getElementById('message');
 
-    function joinChat() {
-      const name = username.value.trim();
-      if (!name) return;
-      socket.send(JSON.stringify({ type: 'join', name }));
-      document.getElementById('join-form').style.display = 'none';
-      document.getElementById('chat-form').style.display = 'block';
-    }
+function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message) return;
+  socket.send(JSON.stringify({ type: 'message', message }));
+  messageInput.value = '';
+}
 
-    function sendMessage() {
-      const message = messageInput.value.trim();
-      if (!message) return;
-      socket.send(JSON.stringify({ type: 'message', name: username.value, message }));
-      messageInput.value = '';
-    }
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'message') {
-        const message = `${data.name}: ${data.message}`;
-        const newMessage = document.createElement('li');
-        newMessage.textContent = message;
-        chatLog.appendChild(newMessage);
-      }
-    };
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.type === 'message') {
+    const message = `${data.name}: ${data.message}`;
+    const newMessage = document.createElement('div');
+    newMessage.classList.add('chat-message');
+    newMessage.innerHTML = `
+      <div class="message-details">
+        <span class="message-sender">${data.name}</span>
+        <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
+      </div>
+      <div class="message-text">${data.message}</div>
+    `;
+    chatLog.appendChild(newMessage);
+  }
+};
   </script>
 </body>
 </html>
+
+-->
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Chat</title>
+    <style>
+        #chat-log {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+        }
+    </style>
+</head>
+<body>
+      <div id="login-container" class="form">
+        <h1>Chat</h1>
+        <input type="text" id="username" placeholder="Enter your name" />
+        <button id="join-button" onclick="JoinChat()">Join</button>
+      </div>
+      <div id="chat-container" style="display:none;">
+        <h1>Chat</h1>
+        <ul id="chat-log"></ul>
+        <div id="message-list"></div>
+        <div id="num-clients"></div>
+        <input type="text" id="message" placeholder="Type your message" />
+        <button id="send-button" onclick="sendMessage()">Send</button>
+      </div>
+      <script>
+            const socket = new WebSocket('ws://localhost:3000');
+            const chatLog = document.getElementById('chat-log');
+            const username = document.getElementById('username');
+            const messageInput = document.getElementById('message');
+            
+            function JoinChat() {
+                const name = username.value.trim();
+                if (!name) return;
+                socket.send(JSON.stringify({ type: 'join', name }));
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+            }
+
+            function sendMessage() {
+              const message = messageInput.value.trim();
+              if (!message) return;
+              const name = username.value;
+              //socket.send(JSON.stringify({ type: 'message', name, message }));
+              //messageInput.value = '';
+              // Create a new message element and append it to the chat log
+              const newMessage = document.createElement('li');
+              newMessage.textContent = `${name}: ${message}`;
+              chatLog.appendChild(newMessage);
+            }
+
+            
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'message') {
+                    const message = `${data.name}: ${data.message}`;
+                    const newMessage = document.createElement('li');
+                    newMessage.textContent = message;
+                    chatLog.appendChild(newMessage);
+                }
+            };
+      </script>
+</body>
+</html>
+-->
