@@ -1,200 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="test.css">
-    <title>Chat</title>
-    <style>
-        #chat-log {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            height: 300px;
-            overflow: auto;
-            border: 1px solid #ccc;
-        }
-    </style>
-</head>
-<body>
-      <div id="login-container" class="form">
-        <h1>Chat</h1>
-        <input type="text" id="username" placeholder="Enter your name" />
-        <button id="join-button" onclick="JoinChat()">Join</button>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SignUP demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <section class="vh-100">
+      <div class="container-fluid h-custom">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-md-9 col-lg-6 col-xl-5">
+            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+              class="img-fluid" alt="Sample image">
+          </div>
+          <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+            <div id="liveAlertPlaceholder"></div>
+            <form id="login-form">
+              <figure class="text-center">
+                <blockquote class="blockquote">
+                  <p>Sign In</p>
+                </blockquote>
+              </figure>
+              <!-- Email input -->
+              <div class="form-outline mb-4">
+                <label class="form-label" for="username">Enter User Name</label>
+                <input type="text" id="username" class="form-control form-control-lg" placeholder="Enter username" required/>
+              </div>
+              
+              <!-- Password input -->
+              <div class="form-outline mb-3">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="passwords" class="form-control form-control-lg" placeholder="Enter password" required/>
+              </div>
+              
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <!-- Checkbox -->
+                <div class="form-check mb-0">
+                  <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
+                  <label class="form-check-label" for="form2Example3">Remember me</label>
+                </div>
+                <a href="#!" class="text-body">Forgot password?</a>
+              </div>
+              
+              <div class="text-center text-lg-start mt-4 pt-2">
+                <button class="btn btn-primary btn-lg">Login</button>
+                <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="signup.html"class="link-danger">Register</a></p>
+              </div>
+              <!--
+                              <div class="divider d-flex align-items-center my-4">
+                <p class="text-center fw-bold mx-3 mb-0">Or</p>
+              </div>
+
+              <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+                <p class="lead fw-normal mb-0 me-1">Sign in with</p>
+                <button type="button" class="btn btn-primary btn-floating mx-1">
+                  <i class="fab fa-facebook-f"></i>
+                </button>
+    
+                <button type="button" class="btn btn-primary btn-floating mx-1">
+                  <i class="fab fa-twitter"></i>
+                </button>
+    
+                <button type="button" class="btn btn-primary btn-floating mx-1">
+                  <i class="fab fa-google"></i>
+                </button>
+              </div>
+              -->    
+            </form>
+          </div>
+        </div>
       </div>
-      <div id="chat-container" style="display:none;">
-        <h1>Chat</h1>
-        <ul id="chat-log"></ul>
-        <div id="num-clients"></div>
-        <input type="text" id="message" placeholder="Type your message" />
-        <button id="send-button" onclick="sendMessage()">Send</button>
-      </div>
-      <script>
-            const socket = new WebSocket('ws://localhost:3000');
-            const chatLog = document.getElementById('chat-log');
-            const username = document.getElementById('username');
-            const messageInput = document.getElementById('message');
-            
-            function JoinChat() {
-                const name = username.value.trim();
-                if (!name) return;
-                socket.send(JSON.stringify({ type: 'join', name }));
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'block';
-            }
+    </section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+<script>
+document.getElementById('login-form').addEventListener('submit', (event) => {
+  event.preventDefault();
 
-            function sendMessage() {
-              const message = messageInput.value.trim();
-              if (!message) return;
-              const name = username.value;
-              socket.send(JSON.stringify({ type: 'message', name, message }));
-              messageInput.value = '';
-            }
+  const username = document.getElementById("username").value;
+  const passwords = document.getElementById("passwords").value;
 
-            
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'message') {
-                    const message = `${data.name}: ${data.message}`;
-                    const newMessage = document.createElement('li');
-                    newMessage.textContent = message;
-                    chatLog.appendChild(newMessage);
-                }
-            };
-      </script>
-</body>
-</html>
-
-
-
-<!--
-whatsapp form
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat</title>
-  <link rel="stylesheet" href="WhatStyle.css">
-</head>
-<body>
-  <div class="chat-container">
-    <div class="chat-header">
-      <h1>Chat</h1>
-    </div>
-    <div class="chat-log" id="chat-log"></div>
-    <div class="chat-input">
-      <input type="text" id="message" placeholder="Type your message">
-      <button id="send-button" onclick="sendMessage()">Send</button>
-    </div>
-  </div>
-  <script>
-const socket = new WebSocket('ws://localhost:3000');
-const chatLog = document.getElementById('chat-log');
-const messageInput = document.getElementById('message');
-
-function sendMessage() {
-  const message = messageInput.value.trim();
-  if (!message) return;
-  socket.send(JSON.stringify({ type: 'message', message }));
-  messageInput.value = '';
-}
-
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  if (data.type === 'message') {
-    const message = `${data.name}: ${data.message}`;
-    const newMessage = document.createElement('div');
-    newMessage.classList.add('chat-message');
-    newMessage.innerHTML = `
-      <div class="message-details">
-        <span class="message-sender">${data.name}</span>
-        <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
-      </div>
-      <div class="message-text">${data.message}</div>
-    `;
-    chatLog.appendChild(newMessage);
-  }
-};
+  fetch('http://localhost:3000/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `username=${username}&passwords=${passwords}`
+  })
+    .then(response => response.text())
+    .then(data => {
+      if (data === 'User authenticated') {
+        window.location.href = 'index.html?username=' + username;
+      } else {
+        alert('Login failed');
+      }
+    });
+});
   </script>
 </body>
 </html>
-
--->
-
-
-
-<!--
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Chat</title>
-    <style>
-        #chat-log {
-          list-style-type: none;
-          margin: 0;
-          padding: 0;
-        }
-    </style>
-</head>
-<body>
-      <div id="login-container" class="form">
-        <h1>Chat</h1>
-        <input type="text" id="username" placeholder="Enter your name" />
-        <button id="join-button" onclick="JoinChat()">Join</button>
-      </div>
-      <div id="chat-container" style="display:none;">
-        <h1>Chat</h1>
-        <ul id="chat-log"></ul>
-        <div id="message-list"></div>
-        <div id="num-clients"></div>
-        <input type="text" id="message" placeholder="Type your message" />
-        <button id="send-button" onclick="sendMessage()">Send</button>
-      </div>
-      <script>
-            const socket = new WebSocket('ws://localhost:3000');
-            const chatLog = document.getElementById('chat-log');
-            const username = document.getElementById('username');
-            const messageInput = document.getElementById('message');
-            
-            function JoinChat() {
-                const name = username.value.trim();
-                if (!name) return;
-                socket.send(JSON.stringify({ type: 'join', name }));
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'block';
-            }
-
-            function sendMessage() {
-              const message = messageInput.value.trim();
-              if (!message) return;
-              const name = username.value;
-              //socket.send(JSON.stringify({ type: 'message', name, message }));
-              //messageInput.value = '';
-              // Create a new message element and append it to the chat log
-              const newMessage = document.createElement('li');
-              newMessage.textContent = `${name}: ${message}`;
-              chatLog.appendChild(newMessage);
-            }
-
-            
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'message') {
-                    const message = `${data.name}: ${data.message}`;
-                    const newMessage = document.createElement('li');
-                    newMessage.textContent = message;
-                    chatLog.appendChild(newMessage);
-                }
-            };
-      </script>
-</body>
-</html>
--->
