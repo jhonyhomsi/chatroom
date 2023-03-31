@@ -21,22 +21,12 @@
     </style>
 </head>
 <body>
-    <div id="login-container">
-        <input type="text" id="username" placeholder="Enter your name" />
-        <button id="join-button" onclick="joinChat()">Join Chat</button>
-    </div>
-    <div id="chat-container" style="display: none">
-        <h1>Welcome <span id="username-display"></span></h1>
-        <div id="num-clients"></div>
-        <ul id="chat-log"></ul>
-        <input type="text" id="message" placeholder="Type your message" /><br /><br />
-        <button id="send-button" onclick="sendMessage()">Send</button>
-    </div>
+    <h1>Chat</h1>
+    <div id="num-clients"></div>
+    <ul id="chat-log"></ul>
+    <input type="text" id="message" placeholder="Type your message" /><br /><br />
+    <button id="send-button" onclick="sendMessage()">Send</button>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('username');
-        document.getElementById("username").value = username;
-
         const socket = new WebSocket('wss://chatroom.example.com');
         socket.onerror = (event) => {
             console.error('WebSocket error:', event);
@@ -45,18 +35,10 @@
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
 
-        function joinChat() {
-            const name = username.value.trim();
-            if (!name) return;
-            socket.send(JSON.stringify({ type: 'join', name }));
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'block';
-        }
-
         function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
-            const name = username.value;
+            const name = "Anonymous";
             socket.send(JSON.stringify({ type: 'message', name, message }));
             messageInput.value = '';
         }
@@ -90,8 +72,7 @@
         };
 
         window.addEventListener('load', () => {
-            document.getElementById("username-display").textContent = username;
-            joinChat();
+            sendMessage();
         });
     </script>
 </body>
