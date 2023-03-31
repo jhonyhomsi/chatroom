@@ -15,62 +15,84 @@
             overflow: auto;
             border: 1px solid #ccc;
         }
+        .notification {
+            color: blue;
+        }
     </style>
 </head>
 <body>
-      <div id="chat-container">
-        <h1>Welcome <span id="username"></span></h1>
-        <ul id="chat-log"></ul>
+    <div id="login-container">
+        <input type="text" id="username" placeholder="Enter your name" />
+        <button id="join-button" onclick="joinChat()">Join Chat</button>
+    </div>
+    <div id="chat-container" style="display: none">
+        <h1>Welcome <span id="username-display"></span></h1>
         <div id="num-clients"></div>
+        <ul id="chat-log"></ul>
         <input type="text" id="message" placeholder="Type your message" /><br /><br />
         <button id="send-button" onclick="sendMessage()">Send</button>
-      </div>
-      <script>
-            
-            // Retrieve the username from the URL query parameter
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            const username = urlParams.get('username');
-                    
-            // Display the username on the page
-            
-            document.getElementById("username").textContent = username;
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        document.getElementById("username").value = username;
 
-            const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
-            const chatLog = document.getElementById('chat-log');
-            const messageInput = document.getElementById('message');
+        const socket = new WebSocket('wss://chatroom.example.com');
+        socket.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
 
-            function joinChat() {
-                const name = username.value.trim();
-                if (!name) return;
-                socket.send(JSON.stringify({ type: 'join', name }));
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'block';
-            }
+        const chatLog = document.getElementById('chat-log');
+        const messageInput = document.getElementById('message');
 
-            function sendMessage() {
-              const message = messageInput.value.trim();
-              if (!message) return;
-              const name = username;
-              socket.send(JSON.stringify({ type: 'message', name, message }));
-              messageInput.value = '';
-            }
+        function joinChat() {
+            const name = username.value.trim();
+            if (!name) return;
+            socket.send(JSON.stringify({ type: 'join', name }));
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'block';
+        }
 
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'message') {
-                    const message = `${data.message}`;
-                    const newMessage = document.createElement('li');
-                    newMessage.textContent = message;
-                    chatLog.appendChild(newMessage);
-                } else if (data.type === 'notification') {
-                    const message = `${data.message}`;
-                    const newMessage = document.createElement('li');
-                    newMessage.textContent = message;
-                    chatLog.appendChild(newMessage);
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            const name = username.value;
+            socket.send(JSON.stringify({ type: 'message', name, message }));
+            messageInput.value = '';
+        }
+
+        function displayNotification(message) {
+            const newNotification = document.createElement('li');
+            newNotification.classList.add('notification');
+            newNotification.textContent = message;
+            chatLog.appendChild(newNotification);
+        }
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'message') {
+                const message = `${data.name}: ${data.message}`;
+                const newMessage = document.createElement('li');
+                newMessage.textContent = message;
+                chatLog.appendChild(newMessage);
+            } else if (data.type === 'notification') {
+                const message = `${data.message}`;
+                displayNotification(message);
+            } else if (data.type === 'client-count') {
+                const count = data.count;
+                const numClients = document.getElementById('num-clients');
+                if (count === 1) {
+                    numClients.textContent = `You are the only one in the chatroom.`;
+                } else {
+                    numClients.textContent = `There are ${count} users in the chatroom.`;
                 }
-            };
-      </script>
+            }
+        };
+
+        window.addEventListener('load', () => {
+            document.getElementById("username-display").textContent = username;
+            joinChat();
+        });
+    </script>
 </body>
 </html>
