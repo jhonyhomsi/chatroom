@@ -27,7 +27,7 @@
     <input type="text" id="message" placeholder="Type your message" /><br /><br />
     <button id="send-button" onclick="sendMessage()">Send</button>
     <script>
-        const socket = new WebSocket('wss://chatroom.example.com');
+        const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
         socket.onerror = (event) => {
             console.error('WebSocket error:', event);
         };
