@@ -58,7 +58,7 @@
         socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.type === 'message') {
-        const name = data.name || 'Anonymous';
+        const name = data.name;
         const message = `${name}: ${data.message}`;
         const newMessage = document.createElement('li');
         newMessage.textContent = message;
