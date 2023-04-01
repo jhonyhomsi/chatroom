@@ -91,7 +91,6 @@ socket.onerror = (event) => {
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'message') {
-                const username = username;
                 const message = `${username}: ${data.message}`;
                 const newMessage = document.createElement('li');
                 newMessage.textContent = message;
