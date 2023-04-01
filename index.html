@@ -42,7 +42,7 @@
             const messageInput = document.getElementById('message');
 
             function joinChat() {
-                const name = username.value.trim();
+                const name = username.trim();
                 if (!name) return;
                 socket.send(JSON.stringify({ type: 'join', name }));
                 document.getElementById('login-container').style.display = 'none';
