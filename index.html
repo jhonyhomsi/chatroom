@@ -79,27 +79,36 @@ socket.onerror = (event) => {
             chatLog.appendChild(newNotification);
         }
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'message') {
-                const username = data.username;
-                const message = `${username}: ${data.message}`;
-                const newMessage = document.createElement('li');
-                newMessage.textContent = message;
-                chatLog.appendChild(newMessage);
-            } else if (data.type === 'notification') {
-                const message = `${data.message}`;
-                displayNotification(message);
-            } else if (data.type === 'client-count') {
-                const count = data.count;
-                const numClients = document.getElementById('num-clients');
-                if (count === 1) {
-                    numClients.textContent = `You are the only one in the chatroom.`;
-                } else {
-                    numClients.textContent = `There are ${count} users in the chatroom.`;
-                }
-            }
-        };
+        function sendMessage() {
+            console.log("Sending message:", messageInput.value);
+            const message = messageInput.value.trim();
+            if (!message) return;
+            console.log("Sending to socket:", JSON.stringify({ type: 'message', username, message }));
+            socket.send(JSON.stringify({ type: 'message', username, message }));
+            messageInput.value = '';
+        }
+
+        //socket.onmessage = (event) => {
+        //    const data = JSON.parse(event.data);
+        //    if (data.type === 'message') {
+        //        const username = data.username;
+        //        const message = `${username}: ${data.message}`;
+        //        const newMessage = document.createElement('li');
+        //        newMessage.textContent = message;
+        //        chatLog.appendChild(newMessage);
+        //    } else if (data.type === 'notification') {
+        //        const message = `${data.message}`;
+        //        displayNotification(message);
+        //    } else if (data.type === 'client-count') {
+        //        const count = data.count;
+        //        const numClients = document.getElementById('num-clients');
+        //        if (count === 1) {
+        //            numClients.textContent = `You are the only one in the chatroom.`;
+        //        } else {
+        //            numClients.textContent = `There are ${count} users in the chatroom.`;
+        //        }
+        //    }
+        //};
 
 
         //socket.onmessage = (event) => {
