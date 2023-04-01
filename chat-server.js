@@ -49,13 +49,15 @@ async function saveMessage(collection, messageObj) {
     message: messageObj.message,
     timestamp: new Date(),
   };
-  try {
-    const result = await collection.insertOne(chatMessage);
-    console.log('Message saved successfully');
-  } catch (error) {
-    console.log('Error saving message:', error);
-  }
+  collection.insertOne(chatMessage, (error, result) => {
+    if (error) {
+      console.log('Error saving message:', error); // add this line
+    } else {
+      console.log('Message saved successfully');
+    }
+  });
 }
+
 
 server.listen(4000, () => {
   console.log('Server listening on port 4000');
