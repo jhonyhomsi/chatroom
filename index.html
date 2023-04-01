@@ -32,7 +32,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         let username = urlParams.get('username');
         document.getElementById("username-display").textContent = username;
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
 
