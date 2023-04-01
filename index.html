@@ -35,34 +35,15 @@
 
         const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
 
-socket.onopen = (event) => {
-    console.log('WebSocket connection opened:', event);
-};
-
-socket.onclose = (event) => {
-    console.log('WebSocket connection closed:', event);
-};
-
-socket.onerror = (event) => {
-    console.error('WebSocket error:', event);
-};
-
-
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
 
-
         function sendMessage() {
-            console.log('Sending message:', messageInput.value);
             const message = messageInput.value.trim();
             if (!message) return;
             socket.send(JSON.stringify({ type: 'message', username, message }));
             messageInput.value = '';
         }
-
-        console.log('Received message:', message);
-
-
 
         //function sendMessage() {
         //    const message = messageInput.value.trim();
@@ -80,7 +61,6 @@ socket.onerror = (event) => {
         }
 
         function sendMessage() {
-            console.log("Sending message:", messageInput.value);
             const message = messageInput.value.trim();
             if (!message) return;
             console.log("Sending to socket:", JSON.stringify({ type: 'message', username, message }));
