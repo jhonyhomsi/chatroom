@@ -7,9 +7,11 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-const mongoUrl = 'mongodb://localhost:27017';
-const dbName = 'chatroom';
-const collectionName = 'users';
+const port = process.env.PORT || 4000;
+
+const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
+const dbName = 'ChatsDatabase';
+const collectionName = 'ChatsLog';
 let db;
 
 // Connect to MongoDB
@@ -66,6 +68,6 @@ wss.on('connection', (socket) => {
   });
 });
 
-server.listen(8080, () => {
-  console.log('Server started on port 8080');
+server.listen(port, () => {
+  console.log(`Server started on port ${port}` );
 });
