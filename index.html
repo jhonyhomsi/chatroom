@@ -34,9 +34,19 @@
         document.getElementById("username-display").textContent = username;
 
         const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
-        socket.onerror = (event) => {
-            console.error('WebSocket error:', event);
-        };
+
+socket.onopen = (event) => {
+    console.log('WebSocket connection opened:', event);
+};
+
+socket.onclose = (event) => {
+    console.log('WebSocket connection closed:', event);
+};
+
+socket.onerror = (event) => {
+    console.error('WebSocket error:', event);
+};
+
 
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
