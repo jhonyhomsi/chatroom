@@ -30,7 +30,7 @@
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        let username = urlParams.get('username');
+        let username = decodeURIComponent(urlParams.get('username'));
         document.getElementById("username-display").textContent = username;
 
         const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
@@ -44,7 +44,7 @@
         function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
-            socket.send(JSON.stringify({ type: 'message', username, message }));
+                socket.send(JSON.stringify({ type: 'message', username, message }));
             messageInput.value = '';
         }
 
