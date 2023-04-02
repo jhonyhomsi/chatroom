@@ -27,7 +27,7 @@
         <div id="num-clients"></div>
         <ul id="chat-log"></ul>
         <input type="text" id="message" placeholder="Type your message" />
-        <button id="send-button" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -36,6 +36,7 @@
         const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
+        const sendButton = document.getElementById('send-button');
         const numClients = document.getElementById('num-clients');
 
         function sendMessage() {
@@ -46,16 +47,19 @@
             messageInput.value = '';
         }
 
+        sendButton.addEventListener('click', sendMessage);
+
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'message') {
-                const message = `${data.message}`;
+                const message = `${data.name}: ${data.message}`;
                 const newMessage = document.createElement('li');
                 newMessage.textContent = message;
                 chatLog.appendChild(newMessage);
             } else if (data.type === 'notification') {
                 const message = `${data.message}`;
                 const newMessage = document.createElement('li');
+                newMessage.classList.add('notification');
                 newMessage.textContent = message;
                 chatLog.appendChild(newMessage);
             } else if (data.type === 'userCount') {

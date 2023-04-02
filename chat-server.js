@@ -63,6 +63,8 @@ wss.on('connection', async (ws) => {
     });
   });
 
+  const users = await getUsers(messagesCollection);
+  ws.send(JSON.stringify({ type: 'users', users }));
   ws.send(JSON.stringify({ type: 'userCount', count: userCount }));
 });
 
@@ -81,6 +83,10 @@ async function saveMessage(collection, messageObj) {
   });
 }
 
+async function getUsers(collection) {
+  const users = await collection.distinct("name");
+  return users;
+}
 
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);
