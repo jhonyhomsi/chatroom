@@ -10,7 +10,7 @@ const wss = new WebSocket.Server({ server });
 const port = process.env.PORT || 4000;
 
 async function connectToDatabase() {
-  const uri = 'mongodb+srv://<username>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority';
+  const uri = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/ChatsDatabase?retryWrites=true&w=majority';
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
   return client.db().collection("users");
