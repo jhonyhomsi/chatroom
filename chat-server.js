@@ -9,65 +9,79 @@ const wss = new WebSocket.Server({ server });
 
 const port = process.env.PORT || 4000;
 
-const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
-const dbName = 'ChatsDatabase';
-let collectionName = 'ChatsLog';
-let db;
-
-// Connect to MongoDB
-MongoClient.connect(mongoUrl, (err, client) => {
-  if (err) {
-    console.error('Failed to connect to MongoDB:', err);
-    process.exit(1);
-  }
-
-  console.log('Connected to MongoDB successfully');
-  db = client.db(dbName);
-});
-
-// Broadcast the number of online users to all connected clients
-function broadcastUserCount() {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      db.collection(collectionName).countDocuments({ online: true }, (err, count) => {
-        if (err) {
-          console.error('Failed to retrieve online user count from database:', err);
-          return;
-        }
-        client.send(JSON.stringify({ type: 'userCount', count }));
-      });
-    }
-  });
+async function connectToDatabase() {
+  const uri = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/ChatsDatabase?retryWrites=true&w=majority'; // Replace with your own MongoDB Atlas URI
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  await client.connect();
+  return client.db().collection("ChatsLog");
 }
 
-// Handle new WebSocket connections
-wss.on('connection', (socket) => {
-  console.log('Client connected');
+let userCount = 0;
 
-  // Broadcast the number of online users to all connected clients on each new connection
-  broadcastUserCount();
+wss.on('connection', async (ws) => {
+  console.log('a user connected');
+  userCount++;
 
-  // Handle incoming WebSocket messages
-  socket.on('message', (data) => {
-    console.log(`Received message from client: ${data}`);
+  const messagesCollection = await connectToDatabase();
 
-    // Broadcast the received message to all connected clients
+  ws.on('message', async (data) => {
+    console.log(`received message: ${data}`);
+
+    const messageObj = JSON.parse(data);
+
+    if (messageObj.type === 'join') {
+      const joinMessage = `${messageObj.name} has joined the chat`;
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'notification', message: joinMessage }));
+        }
+      });
+      userCount++;
+    } else if (messageObj.type === 'message') {
+      const message = `${messageObj.name}: ${messageObj.message}`;
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'message', message }));
+        }
+      });
+      await saveMessage(messagesCollection, messageObj);
+    }
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(data);
+        client.send(JSON.stringify({ type: 'userCount', count: userCount }));
       }
     });
   });
 
-  // Handle WebSocket disconnections
-  socket.on('close', () => {
-    console.log('Client disconnected');
-
-    // Broadcast the number of online users to all connected clients on each disconnection
-    broadcastUserCount();
+  ws.on('close', () => {
+    console.log('a user disconnected');
+    userCount--;
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'userCount', count: userCount }));
+      }
+    });
   });
+
+  ws.send(JSON.stringify({ type: 'userCount', count: userCount }));
 });
 
+async function saveMessage(collection, messageObj) {
+  const chatMessage = {
+    name: messageObj.name,
+    message: messageObj.message,
+    timestamp: new Date(),
+  };
+  collection.insertOne(chatMessage, (error, result) => {
+    if (error) {
+      console.log('Error saving message:', error); // add this line
+    } else {
+      console.log('Message saved successfully');
+    }
+  });
+}
+
+
 server.listen(port, () => {
-  console.log(`Server started on port ${port}` );
+  console.log(`Server listening on port ${port}`);
 });
