@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -73,4 +71,3 @@ wss.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`Server started on port ${port}` );
 });
->>>>>>> parent of 1558ae5 (CorrectStack)
