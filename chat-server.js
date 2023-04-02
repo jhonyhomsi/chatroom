@@ -9,15 +9,28 @@ const wss = new WebSocket.Server({ server });
 
 const port = process.env.PORT || 4000;
 
+<<<<<<< HEAD
 async function connectToDatabase() {
   const uri = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/ChatsDatabase?retryWrites=true&w=majority';
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
   return client.db().collection("users");
 }
+=======
+const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
+const dbName = 'ChatsDatabase';
+let collectionName = 'ChatsLog';
+let db;
+>>>>>>> parent of 1558ae5 (CorrectStack)
 
-let userCount = 0;
+// Connect to MongoDB
+MongoClient.connect(mongoUrl, (err, client) => {
+  if (err) {
+    console.error('Failed to connect to MongoDB:', err);
+    process.exit(1);
+  }
 
+<<<<<<< HEAD
 wss.on('connection', async (ws) => {
   console.log('a user connected');
   userCount++;
@@ -79,10 +92,58 @@ async function saveMessage(collection, messageObj) {
       console.log('Error saving message:', error);
     } else {
       console.log('Message saved successfully');
+=======
+  console.log('Connected to MongoDB successfully');
+  db = client.db(dbName);
+});
+
+// Broadcast the number of online users to all connected clients
+function broadcastUserCount() {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      db.collection(collectionName).countDocuments({ online: true }, (err, count) => {
+        if (err) {
+          console.error('Failed to retrieve online user count from database:', err);
+          return;
+        }
+        client.send(JSON.stringify({ type: 'userCount', count }));
+      });
+>>>>>>> parent of 1558ae5 (CorrectStack)
     }
   });
 }
 
+<<<<<<< HEAD
+=======
+// Handle new WebSocket connections
+wss.on('connection', (socket) => {
+  console.log('Client connected');
+
+  // Broadcast the number of online users to all connected clients on each new connection
+  broadcastUserCount();
+
+  // Handle incoming WebSocket messages
+  socket.on('message', (data) => {
+    console.log(`Received message from client: ${data}`);
+
+    // Broadcast the received message to all connected clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  });
+
+  // Handle WebSocket disconnections
+  socket.on('close', () => {
+    console.log('Client disconnected');
+
+    // Broadcast the number of online users to all connected clients on each disconnection
+    broadcastUserCount();
+  });
+});
+
+>>>>>>> parent of 1558ae5 (CorrectStack)
 server.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  console.log(`Server started on port ${port}` );
 });
