@@ -54,7 +54,7 @@
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'message') {
-                const message = `${username}: ${data.message}`;
+                const message = `${data.name}: ${data.message}`;
                 const newMessage = document.createElement('li');
                 newMessage.textContent = message;
                 chatLog.appendChild(newMessage);
