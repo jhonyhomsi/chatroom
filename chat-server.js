@@ -11,7 +11,7 @@ const port = process.env.PORT || 4000;
 
 const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
 const dbName = 'ChatsDatabase';
-const collectionName = 'ChatsLog';
+let collectionName = 'ChatsLog';
 let db;
 
 // Connect to MongoDB
