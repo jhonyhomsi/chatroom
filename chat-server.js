@@ -16,11 +16,18 @@ async function connectToDatabase() {
   return client.db().collection("ChatsLog");
 }
 
+async function getUsersOnline() {
+  const messagesCollection = await connectToDatabase();
+  const usersOnline = await messagesCollection.distinct("name", { "isOnline": true });
+  return usersOnline;
+}
+
 let userCount = 0;
 
 wss.on('connection', async (ws) => {
   console.log('a user connected');
   userCount++;
+  ws.send(JSON.stringify({ type: 'userCount', count: userCount, usersOnline: await getUsersOnline() }));
 
   const messagesCollection = await connectToDatabase();
 
@@ -37,6 +44,7 @@ wss.on('connection', async (ws) => {
         }
       });
       userCount++;
+      await messagesCollection.updateOne({ "name": messageObj.name }, { $set: { "isOnline": true } }, { upsert: true });
     } else if (messageObj.type === 'message') {
       const message = `${messageObj.name}: ${messageObj.message}`;
       wss.clients.forEach((client) => {
@@ -48,24 +56,21 @@ wss.on('connection', async (ws) => {
     }
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'userCount', count: userCount }));
+        client.send(JSON.stringify({ type: 'userCount', count: userCount, usersOnline: getUsersOnline() }));
       }
     });
   });
 
-  ws.on('close', () => {
+  ws.on('close', async () => {
     console.log('a user disconnected');
     userCount--;
+    await messagesCollection.updateOne({ "name": ws.name }, { $set: { "isOnline": false } });
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'userCount', count: userCount }));
+        client.send(JSON.stringify({ type: 'userCount', count: userCount, usersOnline: getUsersOnline() }));
       }
     });
   });
-
-  const users = await getUsers(messagesCollection);
-  ws.send(JSON.stringify({ type: 'users', users }));
-  ws.send(JSON.stringify({ type: 'userCount', count: userCount }));
 });
 
 async function saveMessage(collection, messageObj) {
@@ -81,11 +86,6 @@ async function saveMessage(collection, messageObj) {
       console.log('Message saved successfully');
     }
   });
-}
-
-async function getUsers(collection) {
-  const users = await collection.distinct("name");
-  return users;
 }
 
 server.listen(port, () => {
