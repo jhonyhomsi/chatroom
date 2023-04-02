@@ -11,6 +11,7 @@ const port = process.env.PORT || 4000;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 async function connectToDatabase() {
   const uri = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/ChatsDatabase?retryWrites=true&w=majority';
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -20,11 +21,16 @@ async function connectToDatabase() {
 =======
 =======
 >>>>>>> parent of 1558ae5 (CorrectStack)
+=======
+>>>>>>> parent of 1558ae5 (CorrectStack)
 const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
 const dbName = 'ChatsDatabase';
 let collectionName = 'ChatsLog';
 let db;
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1558ae5 (CorrectStack)
+=======
 >>>>>>> parent of 1558ae5 (CorrectStack)
 =======
 >>>>>>> parent of 1558ae5 (CorrectStack)
@@ -36,6 +42,7 @@ MongoClient.connect(mongoUrl, (err, client) => {
     process.exit(1);
   }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 wss.on('connection', async (ws) => {
@@ -110,6 +117,12 @@ async function saveMessage(collection, messageObj) {
 });
 
 >>>>>>> parent of 1558ae5 (CorrectStack)
+=======
+  console.log('Connected to MongoDB successfully');
+  db = client.db(dbName);
+});
+
+>>>>>>> parent of 1558ae5 (CorrectStack)
 // Broadcast the number of online users to all connected clients
 function broadcastUserCount() {
   wss.clients.forEach((client) => {
@@ -122,6 +135,9 @@ function broadcastUserCount() {
         client.send(JSON.stringify({ type: 'userCount', count }));
       });
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1558ae5 (CorrectStack)
+=======
 >>>>>>> parent of 1558ae5 (CorrectStack)
 =======
 >>>>>>> parent of 1558ae5 (CorrectStack)
@@ -131,6 +147,7 @@ function broadcastUserCount() {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // Handle new WebSocket connections
 wss.on('connection', (socket) => {
@@ -139,6 +156,35 @@ wss.on('connection', (socket) => {
 // Handle new WebSocket connections
 wss.on('connection', (socket) => {
   console.log('Client connected');
+=======
+// Handle new WebSocket connections
+wss.on('connection', (socket) => {
+  console.log('Client connected');
+
+  // Broadcast the number of online users to all connected clients on each new connection
+  broadcastUserCount();
+
+  // Handle incoming WebSocket messages
+  socket.on('message', (data) => {
+    console.log(`Received message from client: ${data}`);
+
+    // Broadcast the received message to all connected clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  });
+
+  // Handle WebSocket disconnections
+  socket.on('close', () => {
+    console.log('Client disconnected');
+
+    // Broadcast the number of online users to all connected clients on each disconnection
+    broadcastUserCount();
+  });
+});
+>>>>>>> parent of 1558ae5 (CorrectStack)
 
   // Broadcast the number of online users to all connected clients on each new connection
   broadcastUserCount();
