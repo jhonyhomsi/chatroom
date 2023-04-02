@@ -1,72 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Chat</title>
-    <style>
-        #chat-log {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            height: 300px;
-            overflow: auto;
-            border: 1px solid #ccc;
-        }
-        .notification {
-            color: blue;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Chat</title>
 </head>
 <body>
-    <div id="chat-container">
-        <h1>Welcome <span id="username-display"></span></h1>
-        <div id="num-clients"></div>
-        <ul id="chat-log"></ul>
-        <input type="text" id="message" placeholder="Type your message" />
-        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
-    </div>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let username = urlParams.get('username');
-        document.getElementById("username-display").textContent = username;
-        const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
-        const chatLog = document.getElementById('chat-log');
-        const messageInput = document.getElementById('message');
-        const sendButton = document.getElementById('send-button');
-        const numClients = document.getElementById('num-clients');
+  <h1>WebSocket Chat</h1>
+  <div>
+    <span id="user-count"></span> users online:<br>
+    <ul id="user-list"></ul>
+  </div>
+  <div>
+    <ul id="chat-log"></ul>
+    <form id="message-form">
+      <input type="text" id="name" placeholder="Your name">
+      <input type="text" id="message" placeholder="Type your message...">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+  <script>
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${protocol}//${window.location.host}`);
 
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
-            const name = username;
-            socket.send(JSON.stringify({ type: 'message', name, message }));
-            messageInput.value = '';
-        }
+    const userCountElement = document.getElementById('user-count');
+    const userListElement = document.getElementById('user-list');
+    const chatLogElement = document.getElementById('chat-log');
+    const messageForm = document.getElementById('message-form');
+    const nameInput = document.getElementById('name');
+    const messageInput = document.getElementById('message');
 
-        sendButton.addEventListener('click', sendMessage);
+    function updateUsersOnline(usersOnline) {
+      userCountElement.textContent = usersOnline.length;
+      userListElement.innerHTML = '';
+      usersOnline.forEach((username) => {
+        const li = document.createElement('li');
+        li.textContent = username;
+        userListElement.appendChild(li);
+      });
+    }
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'message') {
-                const message = `${data.name}: ${data.message}`;
-                const newMessage = document.createElement('li');
-                newMessage.textContent = message;
-                chatLog.appendChild(newMessage);
-            } else if (data.type === 'notification') {
-                const message = `${data.message}`;
-                const newMessage = document.createElement('li');
-                newMessage.classList.add('notification');
-                newMessage.textContent = message;
-                chatLog.appendChild(newMessage);
-            } else if (data.type === 'userCount') {
-                const count = `${data.count}`;
-                numClients.textContent = `Users online: ${count}`;
-            }
-        };
-    </script>
+    socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'userCount') {
+        updateUsersOnline(data.usersOnline);
+      } else if (data.type === 'notification') {
+        const li = document.createElement('li');
+        li.textContent = data.message;
+        chatLogElement.appendChild(li);
+      } else if (data.type === 'message') {
+        const li = document.createElement('li');
+        li.textContent = data.message;
+        chatLogElement.appendChild(li);
+      }
+    });
+
+    messageForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const name = nameInput.value.trim();
+      const message = messageInput.value.trim();
+
+      if (!name || !message) {
+        return;
+      }
+
+      const data = {
+        type: 'message',
+        name,
+        message,
+      };
+
+      socket.send(JSON.stringify(data));
+
+      messageInput.value = '';
+      messageInput.focus();
+    });
+  </script>
 </body>
 </html>
