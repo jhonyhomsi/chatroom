@@ -14,11 +14,27 @@ async function connectToDatabase() {
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
   return client.db().collection("ChatsLog");
+
+  const usersCollection = await client.db().collection("Users");
+  async function getUsers() {
+    const users = await usersCollection.find().toArray();
+    return users;
+  }
+
 }
 
 let userCount = 0;
 
 wss.on('connection', async (ws) => {
+  const users = await getUsers();
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ type: 'usersList', users }));
+    }
+  });
+
+
+
   console.log('a user connected');
   userCount++;
 
@@ -44,13 +60,23 @@ wss.on('connection', async (ws) => {
           client.send(JSON.stringify({ type: 'message', message }));
         }
       });
+
       await saveMessage(messagesCollection, messageObj);
     }
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'userCount', count: userCount }));
-      }
-    });
+    if (messageObj.type === 'getUsers') {
+      const users = await getUsers();
+      ws.send(JSON.stringify({ type: 'usersList', users }));
+    }    
+    if (messageObj.type === 'getUsers') {
+      const users = await getUsers();
+      ws.send(JSON.stringify({ type: 'usersList', users }));
+    } else {
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'userCount', count: userCount }));
+        }
+      });
+    }    
   });
 
   ws.on('close', () => {
