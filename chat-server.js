@@ -29,9 +29,6 @@ MongoClient.connect(mongoUrl, (err, client) => {
 wss.on('connection', (socket) => {
   console.log('Client connected');
 
-  // Broadcast the number of online users to all connected clients on each new connection
-  broadcastUserCount();
-
   // Handle incoming WebSocket messages
   socket.on('message', (data) => {
     console.log(`Received message from client: ${data}`);
@@ -56,9 +53,6 @@ wss.on('connection', (socket) => {
   // Handle WebSocket disconnections
   socket.on('close', () => {
     console.log('Client disconnected');
-
-    // Broadcast the number of online users to all connected clients on each disconnection
-    broadcastUserCount();
   });
 });
 
