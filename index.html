@@ -62,6 +62,12 @@
             } else if (data.type === 'userCount') {
                 const count = `${data.count}`;
                 numClients.textContent = `Users online: ${count}`;
+            } else if (data.type === 'userJoin') {
+                const message = `${data.username} joined`;
+                const newMessage = document.createElement('li');
+                newMessage.classList.add('notification');
+                newMessage.textContent = message;
+                chatLog.appendChild(newMessage);
             }
         };
     </script>
