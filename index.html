@@ -39,6 +39,7 @@
               const name = username;
               socket.send(JSON.stringify({ type: 'message', name, message }));
               messageInput.value = '';
+              console.log(name)
             }
 
             socket.onmessage = (event) => {
