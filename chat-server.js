@@ -26,35 +26,44 @@ MongoClient.connect(mongoUrl, (err, client) => {
 });
 
 // Broadcast the number of online users to all connected clients
-//function broadcastUserCount() {
-//  wss.clients.forEach((client) => {
-//    if (client.readyState === WebSocket.OPEN) {
-//      db.collection(collectionName).countDocuments({ online: true }, (err, count) => {
-//        if (err) {
-//          console.error('Failed to retrieve online user count from database:', err);
-//          return;
-//        }
-//        client.send(JSON.stringify({ type: 'userCount', count }));
-//      });
-//    }
-//  });
-//}
+function broadcastUserCount() {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      db.collection(collectionName).countDocuments({ online: true }, (err, count) => {
+        if (err) {
+          console.error('Failed to retrieve online user count from database:', err);
+          return;
+        }
+        client.send(JSON.stringify({ type: 'userCount', count }));
+      });
+    }
+  });
+}
 
 // Handle new WebSocket connections
 wss.on('connection', (socket) => {
   console.log('Client connected');
 
   // Broadcast the number of online users to all connected clients on each new connection
-  //broadcastUserCount();
+  broadcastUserCount();
 
   // Handle incoming WebSocket messages
   socket.on('message', (data) => {
     console.log(`Received message from client: ${data}`);
 
+    // Parse the received message as JSON
+    let message;
+    try {
+      message = JSON.parse(data);
+    } catch (err) {
+      console.error('Failed to parse message as JSON:', err);
+      return;
+    }
+
     // Broadcast the received message to all connected clients
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(data);
+        client.send(JSON.stringify(message));
       }
     });
   });
@@ -64,7 +73,7 @@ wss.on('connection', (socket) => {
     console.log('Client disconnected');
 
     // Broadcast the number of online users to all connected clients on each disconnection
-    //broadcastUserCount();
+    broadcastUserCount();
   });
 });
 
