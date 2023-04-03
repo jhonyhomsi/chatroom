@@ -18,8 +18,8 @@ async function connectToDatabase(collectionName) {
 wss.on('connection', async (ws) => {
   console.log('a user connected');
 
-  const messagesCollection = await connectToDatabase("ChatsLog");
-  const usersCollection = await connectToDatabase("Users");
+  const messagesCollection = await connectToDatabase("AppDatabase");
+  const usersCollection = await connectToDatabase("users");
 
   // Retrieve the list of users from the database
   const users = await usersCollection.find().toArray();
