@@ -1,6 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Chat</title>
+    <style>
+        #chat-log {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            height: 300px;
+            overflow: auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+      <div id="chat-container">
+        <h1>Chat</h1>
+        <ul id="chat-log"></ul>
+        <div id="num-clients"></div>
+        <input type="text" id="message" placeholder="Type your message" />
+        <button id="send-button" onclick="sendMessage()">Send</button>
+      </div>
+      <script>
+            const socket = new WebSocket('wss://localhost:3000');
+            const chatLog = document.getElementById('chat-log');
+            const messageInput = document.getElementById('message');
+
+            function joinChat() {
+                const name = username.value.trim();
+                if (!name) return;
+                socket.send(JSON.stringify({ type: 'join', name }));
+            }
+
+            function sendMessage() {
+              const message = messageInput.value.trim();
+              if (!message) return;
+              const name = username.value;
+              socket.send(JSON.stringify({ type: 'message', name, message }));
+              messageInput.value = '';
+            }
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'message') {
+                    const message = `${data.message}`;
+                    const newMessage = document.createElement('li');
+                    newMessage.textContent = message;
+                    chatLog.appendChild(newMessage);
+                } else if (data.type === 'notification') {
+                    const message = `${data.message}`;
+                    const newMessage = document.createElement('li');
+                    newMessage.textContent = message;
+                    chatLog.appendChild(newMessage);
+                }
+            };
+      </script>
+</body>
+</html>
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -66,3 +133,5 @@
     </script>
 </body>
 </html>
+
+-->
