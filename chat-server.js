@@ -28,6 +28,14 @@ MongoClient.connect(mongoUrl, (err, client) => {
 // Handle new WebSocket connections
 wss.on('connection', (socket) => {
   console.log('Client connected');
+  
+  // Notify all connected clients that a new user has joined the chat
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN && client !== socket) {
+      client.send(JSON.stringify({ type: 'notification', message: 'A new user has joined the chat.' }));
+    }
+  });
+
 
   // Handle incoming WebSocket messages
   socket.on('message', (data) => {
