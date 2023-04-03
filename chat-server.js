@@ -45,7 +45,7 @@ wss.on('connection', (socket) => {
   console.log('Client connected');
 
   // Broadcast the number of online users to all connected clients on each new connection
-  broadcastUserCount();
+  //broadcastUserCount();
 
   // Handle incoming WebSocket messages
   socket.on('message', (data) => {
@@ -64,7 +64,7 @@ wss.on('connection', (socket) => {
     console.log('Client disconnected');
 
     // Broadcast the number of online users to all connected clients on each disconnection
-    broadcastUserCount();
+    //broadcastUserCount();
   });
 });
 
