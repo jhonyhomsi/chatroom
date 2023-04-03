@@ -33,7 +33,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         let username = urlParams.get('username');
         document.getElementById("username-display").textContent = username;
-        const socket = new WebSocket('wss:chatroom-axkk.onrender.com');
+        const socket = new WebSocket('wss://chatroom-axkk.onrender.com');
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message');
         const numClients = document.getElementById('num-clients');
@@ -49,18 +49,19 @@
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'message') {
-                const message = `${data.message}`;
+                const message = `${data.name}: ${data.message}`;
                 const newMessage = document.createElement('li');
                 newMessage.textContent = message;
                 chatLog.appendChild(newMessage);
             } else if (data.type === 'notification') {
                 const message = `${data.message}`;
                 const newMessage = document.createElement('li');
+                newMessage.classList.add('notification');
                 newMessage.textContent = message;
                 chatLog.appendChild(newMessage);
             } else if (data.type === 'userCount') {
                 const count = `${data.count}`;
-                numClients.textContent = `Users online: ${count} from the database`;
+                numClients.textContent = `Users online: ${count}`;
             }
         };
     </script>
