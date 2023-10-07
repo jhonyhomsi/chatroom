@@ -9,9 +9,9 @@ const wss = new WebSocket.Server({ server });
 
 const port = process.env.PORT || 4000;
 
-const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.j3va4xj.mongodb.net/?retryWrites=true&w=majority';
+const mongoUrl = 'mongodb+srv://jhony-33:Serafim12@cluster0.v4dsgzx.mongodb.net/';
 const dbName = 'ChatsDatabase';
-let collectionName = 'ChatsLog';
+let collectionName = 'chats';
 let db;
 
 // Connect to MongoDB
